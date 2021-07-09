@@ -91,8 +91,13 @@ function App() {
         onQueryChange={(eventTargetValue) => setQueryString(eventTargetValue)}
         onTotalChange={(eventTargetValue)=>{setPageCount(eventTargetValue)}}
         queryUser={queryUser}
+
         onQueryUserChange={(eventTargetValue)=>{setQueryUser(eventTargetValue)}}
-        onChangeUserRepo={(queryUser)=>setUserRepo(queryUser)}
+        onChangeUserRepo={(queryUser)=>{
+          setUserRepo(queryUser)
+          setPaginationKeyword('first')
+          setPaginationString('')}
+        }        
       />
 
       {userRepo && totalCount === 0 &&
