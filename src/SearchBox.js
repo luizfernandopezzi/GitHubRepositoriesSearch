@@ -40,7 +40,7 @@ const SearchBox = ({totalCount, pageCount, queryString, onQueryChange, onTotalCh
                 className="form-control form-control-sm text-center me-2"
                 type="number"
                 min="1"
-                max="100"
+                max="10"
                 value={pageCount}
                 onChange={(event) => {
                     onTotalChange(event.target.value);

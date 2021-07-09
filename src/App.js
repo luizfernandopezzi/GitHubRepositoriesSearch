@@ -6,6 +6,9 @@ import SearchBox from './SearchBox';
 import NavButtons from './NavButtons';
 
 function App() {
+  
+  const [page, setPage] = useState(1)
+
   const [userName, setUserName ] = useState('');
   const [repoList, setRepoList] = useState(null)
   let [pageCount, setPageCount] = useState(5);
@@ -19,16 +22,16 @@ function App() {
   let [endCursor, setEndCursor] = useState(null);
   let [hasPreviousPage, setHasPreviousPage] = useState(false);
   let [hasNextPage, setHasNextPage] = useState(true);
+
   let [paginationKeyword, setPaginationKeyword] = useState("first");
   let [paginationString, setPaginationString] = useState("");
- 
 
   const fetchData = useCallback(() => {
-
-    const queryText = JSON.stringify(
+  
+  const queryText = JSON.stringify(
       query(pageCount, queryString, paginationKeyword, paginationString, userRepo)
     );
-    
+
     fetch(github.baseURL, {
       method: "POST",
       headers: github.header,
@@ -48,7 +51,6 @@ function App() {
       setUserName(viewer.name)
       setRepoList(repos)
       setTotalCount(total)
-
       setStartCursor(start);
       setEndCursor(end);
       setHasNextPage(next);
@@ -57,13 +59,24 @@ function App() {
     .catch(err => {
       console.log(err)
     })
-  }, [pageCount, queryString, paginationString, paginationKeyword, userRepo]);
-
+  }, [pageCount, queryString, paginationKeyword, paginationString, userRepo]);
+  
   useEffect(()=>{    
     fetchData()
-    console.log(queryUser)
-  }, [fetchData, queryUser]);
+  }, [fetchData]);
 
+  const arrowPrev = (myPagKeyWord, myPagString) => {
+    setPage(page-1)
+    if(page === 2){
+      setPaginationKeyword('first')
+      setPaginationString('')
+    }else{
+      setPaginationKeyword(myPagKeyWord)
+      setPaginationString(myPagString)
+    }
+    console.log(page, paginationKeyword, paginationString)
+  }
+    
   return (
     <div className="App container mt-5">
       <h1 className="text-primary">
@@ -73,7 +86,8 @@ function App() {
       
       <SearchBox 
         totalCount={totalCount}
-        pageCount={pageCount} queryString={queryString}
+        pageCount={pageCount}
+        queryString={queryString}
         onQueryChange={(eventTargetValue) => setQueryString(eventTargetValue)}
         onTotalChange={(eventTargetValue)=>{setPageCount(eventTargetValue)}}
         queryUser={queryUser}
@@ -91,10 +105,12 @@ function App() {
       {repoList && (
         <>
           <NavButtons start={startCursor} end={endCursor} next={hasNextPage} previous={hasPreviousPage} 
-          onPage={(myKeyword, myString) => {
-              setPaginationKeyword(myKeyword);
-              setPaginationString(myString);
-            }} />
+          onPagePrev={arrowPrev}
+          onPageNext={(myPagKeyWord, myPagString) => {
+            setPaginationKeyword(myPagKeyWord)
+            setPaginationString(myPagString)
+            setPage(page+1)
+          }} />
 
           <ul className="list-group list-group-flush">
             {repoList.map((item) => 
